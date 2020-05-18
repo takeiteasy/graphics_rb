@@ -7,6 +7,8 @@ $ENUMS
 $CALLBACKS
   
 $FUNCTIONS
+
+$STRUCTS
 end
 
 def RGBA r, g, b, a
@@ -34,5 +36,3 @@ class Integer
     (self >> 24) & 0xFF
   end
 end
-
-$STRUCTS

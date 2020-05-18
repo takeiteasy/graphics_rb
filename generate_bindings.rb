@@ -71,7 +71,7 @@ output['ENUMS'] = all_enums.map do |k, v|
 end
 
 output['STRUCTS'] = all_structs.map do |k, v|
-  out = "class #{k[0...-2].to_PascalCase} < FFI::Struct\n\tlayout\t"
+  out = "  class #{k[0...-2].to_PascalCase} < FFI::Struct\n  \tlayout\t"
   v.each_with_index do |vv, i|
     type = case vv[:defn]
       when /\S+\(\*#{vv[:name]}\)\([^\)]+\);/, /(\s\*|\*\s)#{vv[:name]}/
@@ -81,11 +81,12 @@ output['STRUCTS'] = all_structs.map do |k, v|
         ':' + $3
       end
     out << ":#{vv[:name]}, #{type}"
-    out << ",\n\t\t\t\t\t" unless i == v.length - 1
+    out << ",\n\t\t\t\t\t\t" unless i == v.length - 1
   end
-  out << "\nend\n"
+  out << "\n  end"
 end
 
+callback_map = []
 output['CALLBACKS'] = []
 output['FUNCTIONS'] = all_prototypes.map do |v|
   /^(extern )?(?<ret>\S+) ([^\(])+\((?<args>.*)\);$/ =~ v[:defn]
@@ -132,7 +133,10 @@ output['FUNCTIONS'] = all_prototypes.map do |v|
           else # TODO: Modify header to have all callbacks suffixed with "_cb"
             cb_name = v[:name].end_with?('callback') ? v[:name] : v[:name] + '_callback'
           end
-          output['CALLBACKS'] << "  callback :#{cb_name}, [#{cb_args.join(', ')}], :#{cb_ret}"
+          unless callback_map.include? cb_name
+            output['CALLBACKS'] << "  callback :#{cb_name}, [#{cb_args.join(', ')}], :#{cb_ret}"
+            callback_map << cb_name
+          end
           ':' + cb_name
         when /\*/
           ':pointer'
