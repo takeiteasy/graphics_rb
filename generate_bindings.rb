@@ -148,8 +148,13 @@ output['FUNCTIONS'] = all_prototypes.map do |v|
           if x == '...'
             ':varargs'
           else
-            /^(((struct|unsigned|const) )?(\S+))/ =~ x
-            ':' + $4
+            case x.split(' ')[-1].delete(',')
+            when 'col', 'fg', 'bg'
+              ':long'
+            else
+              /^(((struct|unsigned|const) )?(\S+))/ =~ x
+              ':' + $4
+            end
           end
         end
     end

@@ -32,7 +32,7 @@ class Integer
 end
 
 def RGBA r, g, b, a=255
-  (a << 24) ^ -(Integer::INT_MAX + 1) | r << 16 | g << 8 | b
+  a << 24 || r << 16 | g << 8 | b
 end
 
 class Pixel

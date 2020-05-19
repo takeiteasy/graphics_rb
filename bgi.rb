@@ -383,6 +383,8 @@ def run w, h, title="Ruby BGI", sw=nil, sh=nil
   while Graphics.closed($WINDOW) != 1 and $RUNNING
     Graphics.events
     yield
+    $INPUT.scroll.x = 0
+    $INPUT.scroll.y = 0
     Graphics.flush $WINDOW, $SCREEN
   end
   Graphics.window_destroy $WINDOW if $WINDOW

@@ -7,6 +7,8 @@ DEPS=-framework Cocoa
 
 all: $(TARGET).dylib clean
 
+alldirty: $(TARGET).dylib
+
 $(TARGET).dylib: $(TARGET).o
 	$(CC) -shared -fpic -o $@ $^ $(DEPS)
 

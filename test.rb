@@ -8,10 +8,10 @@ test2 = Surface.new "/Users/roryb/Pictures/dev/lena.bmp"
 run 640, 480 do
   cls
   if is_key_down? :KB_KEY_SPACE
-    test2.blit 10, 22
+    test2.blit 0, 0
   else
-    test1.blit 10, 22
+    test1.blit 0, 0
   end
   
-  writeln 10, 10, :WHITE, :BLACK, "Hello World!"
+  writeln 10, 10, :WHITE, RGBA(0,0,0,0), "Hello World!"
 end
