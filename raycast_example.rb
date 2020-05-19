@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require './rgi'
 
 class Vec2
