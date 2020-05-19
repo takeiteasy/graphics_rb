@@ -1,7 +1,6 @@
 require './build/graphics'
-require './time/time'
 
-$WINDOW, $SCREEN, $INPUT, $RUNNING = nil, nil, nil, false
+$WINDOW, $SCREEN, $INPUT, $RUNNING, $PAUSED = nil, nil, nil, false, false
 
 class Integer
   def max n
@@ -58,34 +57,34 @@ class Vec2
   end
   
   def + v
-    if v.class == Fixnum
-      Vec2.new @x + v, @y + v
-    else
+    if v.class == Vec2
       Vec2.new @x + v.x, @y + v.y
+    else
+      Vec2.new @x + v, @y + v
     end
   end
 
   def - v
-    if v.class == Fixnum
-      Vec2.new @x - v, @y - v
-    else
+    if v.class == Vec2
       Vec2.new @x - v.x, @y - v.y
+    else
+      Vec2.new @x - v, @y - v
     end
   end
 
   def / v
-    if v.class == Fixnum
-      Vec2.new @x / v, @y / v
-    else
+    if v.class == Vec2
       Vec2.new @x / v.x, @y / v.y
+    else
+      Vec2.new @x / v, @y / v
     end
   end
 
   def * v
-    if v.class == Fixnum
-      Vec2.new @x * v, @y * v
-    else
+    if v.class == Vec2
       Vec2.new @x * v.x, @y * v.y
+    else
+      Vec2.new @x * v, @y * v
     end
   end
 
@@ -326,7 +325,7 @@ def writeln x, y, fg, bg, str, to=nil
   Graphics.writeln to_screen?(to), x, y, fg, bg, str
 end
 
-def run w, h, title="RGI", sw=nil, sh=nil
+def run w, h, title="RGI", sw=nil, sh=nil, resize=false
   graphics_error_callback, = FFI::Function.new(:void, [:int, :pointer, :pointer, :pointer, :int], :blocking => true) do |err, msg, file, func, line|
     raise "ERROR! in #{file} @ line #{line} in #{file} -- #{msg}"
   end
@@ -336,7 +335,7 @@ def run w, h, title="RGI", sw=nil, sh=nil
   sw = w unless sw
   sh = h unless sh
   $WINDOW = Graphics::Window.new
-  raise "Failed to create window!" unless Graphics.window $WINDOW, title, w, h, :NONE
+  raise "Failed to create window!" unless Graphics.window $WINDOW, title, w, h, resize ? :RESIZABLE : :NONE
   $SCREEN = Graphics::Surface.new
   Graphics.surface $SCREEN, sw, sh
   $INPUT = Input.new
@@ -345,6 +344,8 @@ def run w, h, title="RGI", sw=nil, sh=nil
   keyboard_callback = FFI::Function.new(:void, [:pointer, :int, :int, :int], :blocking => true) do |p, key, mod, down|
     $INPUT.keys[key] = down.to_bool
     $INPUT.modifier = mod
+    
+    $RUNNING = false if (key == 81 or key == 87) and mod == 8 and down.to_bool
   end
   mouse_button_callback = FFI::Function.new(:void, [:pointer, :int, :int, :int], :blocking => true) do |p, btn, mod, down|
     $INPUT.btns[btn] = down.to_bool
@@ -362,7 +363,7 @@ def run w, h, title="RGI", sw=nil, sh=nil
     $INPUT.modifier = mod
   end
   focus_callback, = FFI::Function.new(:void, [:pointer, :int], :blocking => true) do |p, focused|
-    # TODO: Pause loop while unfocused?
+    $PAUSED = focused.zero?
   end
   resize_callback = FFI::Function.new(:void, [:pointer, :int, :int], :blocking => true) do |p, w, h|
     # TODO: Allow resizing?
@@ -379,17 +380,22 @@ def run w, h, title="RGI", sw=nil, sh=nil
                             closed_callback,
                             $WINDOW
   
-  last_time = cur_time = SysTime.ticks
+  last_time = cur_time = Time.now
   return unless block_given?
   while Graphics.closed($WINDOW) != 1 and $RUNNING
     Graphics.events
+    if $PAUSED
+      writeln 0, 0, :WHITE, :RED, "PAUSED"
+      sleep 0.0001
+    else
+      last_time = cur_time
+      cur_time  = Time.now
+      delta_time = cur_time - last_time
+      yield delta_time, 1.0 / (delta_time / 1000.0)
     
-    last_time = cur_time
-    cur_time  = SysTime.ticks
-    yield (cur_time - last_time) / 1000000.0
-    
-    $INPUT.scroll.x = 0
-    $INPUT.scroll.y = 0
+      $INPUT.scroll.x = 0
+      $INPUT.scroll.y = 0
+    end
     Graphics.flush $WINDOW, $SCREEN
   end
   Graphics.window_destroy $WINDOW if $WINDOW
