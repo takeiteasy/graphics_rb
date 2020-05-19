@@ -1,3 +1,5 @@
+require 'ffi'
+
 module Graphics
   extend FFI::Library
   ffi_lib "build/graphics.dylib"

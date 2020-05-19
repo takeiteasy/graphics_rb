@@ -1,11 +1,14 @@
-require './bgi'
+require './rgi'
 
 test1 = Surface.new 100, 100
 test1.fill :RED
 
 test2 = Surface.new "/Users/roryb/Pictures/dev/lena.bmp"
 
-run 640, 480 do
+n = 0.0
+run 640, 480, "TEST!" do |dt|
+  puts dt 
+  
   cls
   if is_key_down? :KB_KEY_SPACE
     test2.blit 0, 0

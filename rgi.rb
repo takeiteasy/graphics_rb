@@ -1,5 +1,5 @@
-require 'ffi'
 require './build/graphics'
+require './time/time'
 
 $WINDOW, $SCREEN, $INPUT, $RUNNING = nil, nil, nil, false
 
@@ -326,7 +326,7 @@ def writeln x, y, fg, bg, str, to=nil
   Graphics.writeln to_screen?(to), x, y, fg, bg, str
 end
 
-def run w, h, title="Ruby BGI", sw=nil, sh=nil
+def run w, h, title="RGI", sw=nil, sh=nil
   graphics_error_callback, = FFI::Function.new(:void, [:int, :pointer, :pointer, :pointer, :int], :blocking => true) do |err, msg, file, func, line|
     raise "ERROR! in #{file} @ line #{line} in #{file} -- #{msg}"
   end
@@ -379,10 +379,15 @@ def run w, h, title="Ruby BGI", sw=nil, sh=nil
                             closed_callback,
                             $WINDOW
   
+  last_time = cur_time = SysTime.ticks
   return unless block_given?
   while Graphics.closed($WINDOW) != 1 and $RUNNING
     Graphics.events
-    yield
+    
+    last_time = cur_time
+    cur_time  = SysTime.ticks
+    yield (cur_time - last_time) / 1000000.0
+    
     $INPUT.scroll.x = 0
     $INPUT.scroll.y = 0
     Graphics.flush $WINDOW, $SCREEN
