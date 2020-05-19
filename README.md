@@ -4,14 +4,14 @@ Ruby FFI binding for my [software rendering library](https://github.com/takeitea
 
 The bindings are generated dynamically by the make file using information from [ctags](https://github.com/universal-ctags/ctags). Since the underlying graphics library was made to be cross-platform, so is this. Currently the make file only works on OSX, but only needs tweeking to support Windows and Linux.
 
-There are a few examples included, showing functionality of `rgi.rb` and raw `graphics.rb`. RGI was made to be zero-hassle to start making stuff. However, using the raw bindings isn't really difficult.
+There are a few examples included, showing functionality of `rgi.rb` and raw `graphics.rb`. RGI was made to be zero-hassle to start making stuff. However, using the raw bindings isn't really difficult. The raycaster was adapted from an example on [lodev.org](https://lodev.org/cgtutor/files/raycaster_flat.cpp).
 
 If you like this, check out [graphics](https://github.com/takeiteasy/graphics/).
 
 ## Screenshot
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/takeiteasy/graphics_rb.h/master/screenshot.png">
+  <img src="https://raw.githubusercontent.com/takeiteasy/graphics_rb/master/screenshot.png">
 </p>
 
 
