@@ -5,7 +5,7 @@ CC=clang
 OPTS=-x objective-c -fno-objc-arc
 DEPS=-framework Cocoa
 
-all: $(TARGET).dylib
+all: $(TARGET).dylib clean
 
 $(TARGET).dylib: $(TARGET).o
 	$(CC) -shared -fpic -o $@ $^ $(DEPS)
@@ -22,6 +22,8 @@ $(TARGET).h: $(SRC).h $(OUT)
 $(OUT):
 	mkdir $@
 
-.PHONY: clean
-clean:
+.PHONY: deepclean clean
+deepclean:
 	rm -f $(TARGET).h $(TARGET).dylib $(TARGET).o $(TARGET).rb
+clean:
+	rm -f $(TARGET).h $(TARGET).o

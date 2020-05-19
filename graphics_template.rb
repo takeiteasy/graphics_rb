@@ -11,12 +11,8 @@ $FUNCTIONS
 $STRUCTS
 end
 
-def RGBA r, g, b, a
-  a << 24 | r << 16 | g << 8 | b
-end
-
-def RGB r, g, b
-  RGBA r, g, b, 255
+def RGBA r, g, b, a=255
+  (a << 24) ^ -(INT_MAX + 1) | r << 16 | g << 8 | b
 end
 
 class Integer
