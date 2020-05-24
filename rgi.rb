@@ -47,6 +47,18 @@ class Integer
     !self.zero?
   end
 end
+            
+class FalseClass
+  def to_i
+    0
+  end
+end
+
+class TrueClass
+  def to_i
+    1
+  end
+end
 
 class Vec2
   attr_accessor :x, :y
@@ -302,15 +314,15 @@ def line x1, y1, x2, y2, col, to=nil
 end
 
 def circle xc, yc, r, col, fill=false, to=nil
-  Graphics.circle to_screen?(to), xc, yc, r, col, fill
+  Graphics.circle to_screen?(to), xc, yc, r, col, fill.to_i
 end
 
 def rect x, y, w, h, col, fill=false, to=nil
-  Graphics.rect to_screen?(to), x, y, w, h, col, fill
+  Graphics.rect to_screen?(to), x, y, w, h, col, fill.to_i
 end
 
 def tri x1, y1, x2, y2, x3, y3, col, fill=false, to=nil
-  Graphics.tri to_screen?(to), x1, y1, x2, y2, x3, y3, col, fill
+  Graphics.tri to_screen?(to), x1, y1, x2, y2, x3, y3, col, fill.to_i
 end
 
 def pset x, y, col, to=nil
@@ -365,9 +377,8 @@ def run w, h, title="RGI", sw=nil, sh=nil, resize=false
   focus_callback, = FFI::Function.new(:void, [:pointer, :int], :blocking => true) do |p, focused|
     $PAUSED = focused.zero?
   end
-  resize_callback = FFI::Function.new(:void, [:pointer, :int, :int], :blocking => true) do |p, w, h|
-    # TODO: Allow resizing?
-  end
+  #resize_callback = FFI::Function.new(:void, [:pointer, :int, :int], :blocking => true) do |p, w, h|
+  #end
   closed_callback = FFI::Function.new(:void, [:pointer], :blocking => true) do |p|
     $RUNNING = false
   end
@@ -376,7 +387,7 @@ def run w, h, title="RGI", sw=nil, sh=nil, resize=false
                             mouse_move_callback,
                             scroll_callback,
                             focus_callback,
-                            resize_callback,
+                            nil, # Ignore resize callback, not needed
                             closed_callback,
                             $WINDOW
   

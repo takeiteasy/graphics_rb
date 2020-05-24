@@ -113,10 +113,10 @@ run WINDOWW, WINDOWH, "TEST!", RENDERW, RENDERH, RESIZE do |dt, fps|
   end
   
   move_speed, rot_speed = dt * 5.0, dt * 3.0
-  player.move move_speed if is_key_down? :KB_KEY_W
-  player.move -move_speed if is_key_down? :KB_KEY_S
-  player.rotate -rot_speed if is_key_down? :KB_KEY_D
-  player.rotate rot_speed if is_key_down? :KB_KEY_A
+  player.move    move_speed if is_key_down? :KB_KEY_W
+  player.move   -move_speed if is_key_down? :KB_KEY_S
+  player.rotate -rot_speed  if is_key_down? :KB_KEY_D
+  player.rotate  rot_speed  if is_key_down? :KB_KEY_A
   
   writeln 0, 0, :WHITE, :BLACK, "FPS: #{fps}"
 end
